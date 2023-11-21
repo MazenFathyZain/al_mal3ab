@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:kora/constants.dart';
-import 'package:kora/view/home.dart';
+import 'package:kora/view/home_screen.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 final colorScheme = ColorScheme.fromSeed(
   brightness: Brightness.light,
@@ -28,13 +30,24 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  @override
+ @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
+       localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('ar'), // Arabic
+      ],
       debugShowCheckedModeBanner: false,
       title: 'Great Places',
       theme: theme,
-      home: const HomeScreen(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) =>  HomeScreen(),
+
+      },
     );
   }
 }

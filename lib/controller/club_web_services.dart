@@ -2,34 +2,42 @@ import 'package:dio/dio.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 
-import '../constants.dart';
 import '../model/club.dart';
 
 class ClubWebServices extends GetxController {
-  late Dio dio;
-  RxList<dynamic> dataList = <dynamic>[].obs;
+  RxList<Club> clubs = RxList<Club>();
 
-  ClubWebServices() {
-    BaseOptions options = BaseOptions(
-      baseUrl: baseUrl,
-      receiveDataWhenStatusError: true,
-      connectTimeout: const Duration(seconds: 20),
-      receiveTimeout: const Duration(seconds: 20),
-    );
-
-    dio = Dio(options);
+  @override
+  void onInit() {
+    getclubs();
+    super.onInit();
   }
 
-  Future<void> getAllClubs() async {
-    try {
-      Response response = await dio.get('user/near-clubs');
-      var data = response.data;
+  final Dio _dio = Dio();
 
-      List<Club> club = await data.map((club) => Club.fromJson(club)).toList();
-      dataList.value = club;
-      print(data);
+  Future<List<dynamic>> fetchDataFromApi() async {
+    try {
+      // const apiUrl = 'https://kora-api.onrender.com/api/user/near-clubs';
+      const apiUrl = 'http://localhost:8000/api/user/near-clubs';
+      final response = await _dio.post(apiUrl);
+      if (response.statusCode == 200) {
+        var data = response.data["result"];
+        return data;
+      } else {
+        throw Exception('Failed to fetch data from API');
+      }
     } catch (e) {
-      print(e.toString());
+      throw Exception('Failed to fetch data from API: $e');
+    }
+  }
+
+  Future<void> getclubs() async {
+    try {
+      final data = await fetchDataFromApi();
+      final result = data.map((club) => Club.fromJson(club)).toList();
+      clubs.value = result;
+    } catch (e) {
+      print('Error fetching data: $e');
     }
   }
 }

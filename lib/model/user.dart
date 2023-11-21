@@ -1,4 +1,5 @@
-class Club {
+class OwnedClubs {
+  Location? location;
   String? sId;
   String? name;
   List<Stadiums>? stadiums;
@@ -6,23 +7,23 @@ class Club {
   String? address;
   String? cost;
   List<String>? photos;
-  Location? location;
   int? iV;
-  int? distance;
 
-  Club(
-      {this.sId,
+  OwnedClubs(
+      {this.location,
+      this.sId,
       this.name,
       this.stadiums,
       this.followers,
       this.address,
       this.cost,
       this.photos,
-      this.location,
-      this.iV,
-      this.distance});
+      this.iV});
 
-  Club.fromJson(Map<String, dynamic> json) {
+  OwnedClubs.fromJson(Map<String, dynamic> json) {
+    location = json['location'] != null
+        ? new Location.fromJson(json['location'])
+        : null;
     sId = json['_id'];
     name = json['name'];
     if (json['stadiums'] != null) {
@@ -40,15 +41,14 @@ class Club {
     address = json['address'];
     cost = json['cost'];
     photos = json['photos'].cast<String>();
-    location = json['location'] != null
-        ? new Location.fromJson(json['location'])
-        : null;
     iV = json['__v'];
-    distance = json['distance'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
+    if (this.location != null) {
+      data['location'] = this.location!.toJson();
+    }
     data['_id'] = this.sId;
     data['name'] = this.name;
     if (this.stadiums != null) {
@@ -60,11 +60,26 @@ class Club {
     data['address'] = this.address;
     data['cost'] = this.cost;
     data['photos'] = this.photos;
-    if (this.location != null) {
-      data['location'] = this.location!.toJson();
-    }
     data['__v'] = this.iV;
-    data['distance'] = this.distance;
+    return data;
+  }
+}
+
+class Location {
+  String? type;
+  List<double>? coordinates;
+
+  Location({this.type, this.coordinates});
+
+  Location.fromJson(Map<String, dynamic> json) {
+    type = json['type'];
+    coordinates = json['coordinates'].cast<double>();
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['type'] = this.type;
+    data['coordinates'] = this.coordinates;
     return data;
   }
 }
@@ -95,7 +110,7 @@ class Stadiums {
     photos = json['photos'].cast<String>();
     size = json['size'];
     if (json['availability'] != null) {
-      availability = [];
+      availability = <Availability>[];
       json['availability'].forEach((v) {
         availability!.add(new Availability.fromJson(v));
       });
@@ -168,25 +183,6 @@ class Slots {
     data['hour'] = this.hour;
     data['status'] = this.status;
     data['_id'] = this.sId;
-    return data;
-  }
-}
-
-class Location {
-  String? type;
-  List<double>? coordinates;
-
-  Location({this.type, this.coordinates});
-
-  Location.fromJson(Map<String, dynamic> json) {
-    type = json['type'];
-    coordinates = json['coordinates'].cast<double>();
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['type'] = this.type;
-    data['coordinates'] = this.coordinates;
     return data;
   }
 }

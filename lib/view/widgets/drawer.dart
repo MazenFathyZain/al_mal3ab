@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kora/constants.dart';
-import 'package:kora/view/home.dart';
+import 'package:kora/view/home_screen.dart';
+import 'package:kora/view/auth/login.dart';
 
 class DrawerWidget extends StatelessWidget {
   const DrawerWidget({super.key});
@@ -36,8 +37,26 @@ class DrawerWidget extends StatelessWidget {
                   ),
                 ),
                 onTap: () {
-                  Route route =
-                      MaterialPageRoute(builder: (c) => const HomeScreen());
+                  Route route = MaterialPageRoute(builder: (c) => HomeScreen());
+                  Navigator.pushReplacement(context, route);
+                },
+              ),
+              ListTile(
+                leading: const Icon(
+                  Icons.login,
+                  color: primaryColor,
+                  size: 30,
+                ),
+                title: const Text(
+                  "تسجيل الدخول",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                  ),
+                ),
+                onTap: () {
+                  Route route = MaterialPageRoute(builder: (c) => Login());
                   Navigator.pushReplacement(context, route);
                 },
               ),
