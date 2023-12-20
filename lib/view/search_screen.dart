@@ -2,96 +2,22 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:kora/constants.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:kora/controller/auth_services.dart';
 import 'package:kora/controller/following.dart';
-import 'package:kora/controller/getNearClubs.dart';
-import 'package:kora/controller/get_club_by_id.dart';
+import 'package:kora/controller/get_all_clubs.dart';
 import 'package:kora/view/auth/login.dart';
-import 'package:kora/view/search_screen.dart';
 import 'package:kora/view/stad_detailes_screen.dart';
 import 'package:kora/view/stads_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'widgets/drawer.dart';
-
 // ignore: must_be_immutable
-class HomeScreen extends StatelessWidget {
-  HomeScreen({super.key});
-
-  // final LocationController locationController = Get.put(LocationController());
-  GetNearClubs controller = Get.put(GetNearClubs());
+class SearchScreen extends StatelessWidget {
+  SearchScreen({super.key});
+  GetAllClubs clubController = Get.put(GetAllClubs());
   Follow followController = Get.put(Follow());
   AuthServices authController = Get.put(AuthServices());
-  GetClubById getClubById = Get.put(GetClubById());
-
-  RxList getFollowedEmails() {
-    var emails = getClubById.followers
-        .map((element) => element['user']['email'])
-        .toList()
-        .obs;
-    return emails;
-  }
-
-  Widget search() {
-    return Row(
-      children: [
-        Container(
-          width: 50,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            border: Border.all(color: Colors.grey.shade200),
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          child: IconButton(
-            icon: const Icon(
-              Icons.filter_list,
-              color: Colors.black,
-            ),
-            onPressed: () async {
-              final prefs = await SharedPreferences.getInstance();
-              var token = await prefs.getString('token');
-              // print(authController.mail.value);
-              print(token);
-            },
-          ),
-        ),
-        const SizedBox(width: 5),
-        Expanded(
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border.all(color: Colors.grey.shade200),
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            child: TextField(
-              showCursor: false,
-              keyboardType: TextInputType.none,
-              onTap: () {
-                Get.to(SearchScreen());
-              },
-              textDirection: TextDirection.rtl,
-              textAlign: TextAlign.right,
-              decoration: InputDecoration(
-                hintText: 'ابحث عن الملعب',
-                hintStyle:
-                    TextStyle(color: Colors.grey[400]), // Change the color here
-                suffixIcon: const Icon(
-                  Icons.search,
-                ),
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(
-                    vertical: 10.0, horizontal: 10.0),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
   Future<void> _showAlertDialog(BuildContext context, clubName) async {
     return showDialog<void>(
       context: context,
@@ -102,7 +28,7 @@ class HomeScreen extends StatelessWidget {
             child: ListBody(
               children: <Widget>[
                 Text(
-                  'لمتابعة ${clubName} والحصول على اشعارات يجب عليك تسجيل الدخول',
+                  'لمتابعة $clubName والحصول على اشعارات يجب عليك تسجيل الدخول',
                   textAlign: TextAlign.right,
                 ),
               ],
@@ -127,58 +53,94 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
+  Widget search() {
+    return Row(
+      children: [
+        Container(
+          width: 50,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(color: Colors.grey.shade200),
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          child: IconButton(
+            icon: const Icon(
+              Icons.filter_list,
+              color: Colors.black,
+            ),
+            onPressed: () {},
+          ),
+        ),
+        const SizedBox(width: 5),
+        Expanded(
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border.all(color: Colors.grey.shade200),
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            child: TextField(
+              onChanged: (query) {
+                clubController.searchClubsByName(query);
+                // Handle the search results as needed
+                // You can update the UI or perform other actions based on the search results
+              },
+              textDirection: TextDirection.rtl,
+              textAlign: TextAlign.right,
+              decoration: InputDecoration(
+                hintText: 'اكتب إسم الملعب',
+                hintStyle:
+                    TextStyle(color: Colors.grey[400]), // Change the color here
+                suffixIcon: const Icon(
+                  Icons.search,
+                ),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(
+                    vertical: 10.0, horizontal: 10.0),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: DrawerWidget(),
-      appBar: AppBar(
-        iconTheme: const IconThemeData(color: Colors.green),
-        elevation: 0,
-        title: const Text(
-          "الملعب",
-          style: TextStyle(
-            color: primaryColor,
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-            fontFamily: 'Dimabanou',
-          ),
-        ),
-        centerTitle: true,
-        actions: [
-          Image.asset(
-            "assets/3.png",
-          ),
-        ],
-      ),
-      body: Obx(() {
-        if (controller.clubs.isEmpty) {
-          return const Center(
-            child: CircularProgressIndicator(color: primaryColor),
-          );
-        } else {
-          return SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  search(),
-                  const SizedBox(height: 10),
-                  ListView.builder(
+      appBar: AppBar(),
+      body: Padding(
+        padding: const EdgeInsets.all(15.0),
+        child: Column(
+          children: [
+            search(),
+            Expanded(
+              child: Obx(() {
+                if (clubController.searchResults.isEmpty) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else {
+                  return ListView.builder(
                     shrinkWrap: true,
-                    itemCount: controller.clubs.length,
+                    itemCount: clubController.searchResults.length,
                     itemBuilder: (context, index) {
-                      final club = controller.clubs[index];
-                      getClubs() {
-                        return club.followers!
-                            .map((e) => e.user!.email)
-                            .toList()
-                            .obs;
+                      final club = clubController.searchResults[index];
+                      RxList getFollowedEmails() {
+                        if (club.followers!.isNotEmpty) {
+                          RxList emails = club.followers!
+                              .map((element) => element.user!.email)
+                              .toList()
+                              .obs;
+                          return emails;
+                        }
+                        return [].obs;
                       }
 
                       var image = club.stadiums![0].images![0];
                       Uint8List bytes = base64Decode(image != ''
                           ? club.stadiums![0].images![0].substring(23)
-                          : '');
+                          : ''); //club.photos![0]);
                       return SingleChildScrollView(
                         child: Stack(
                           alignment: Alignment.topRight,
@@ -218,11 +180,15 @@ class HomeScreen extends StatelessWidget {
                                         child: ClipRRect(
                                           borderRadius:
                                               BorderRadius.circular(5),
-                                          child: image == ''
-                                              ? Image.asset('assets/image.jpg',
-                                                  fit: BoxFit.cover)
-                                              : Image.memory(bytes,
-                                                  fit: BoxFit.cover),
+                                          child: image != ''
+                                              ? Image.memory(
+                                                  bytes,
+                                                  fit: BoxFit.fill,
+                                                )
+                                              : Image.asset(
+                                                  'assets/image.jpg',
+                                                  fit: BoxFit.fill,
+                                                ),
                                         ),
                                       ),
                                       const SizedBox(width: 10),
@@ -272,50 +238,32 @@ class HomeScreen extends StatelessWidget {
                                     SharedPreferences prefs =
                                         await SharedPreferences.getInstance();
                                     String? token = prefs.getString('token');
-                                    await getClubById.getClubById(club.id!);
-
-                                    var emails = getClubById.followers
-                                        .map((element) =>
-                                            element['user']['email'])
-                                        .toList()
-                                        .obs;
-                                    if (token != null) {
-                                      if (emails.contains(
-                                          authController.mail.value)) {
-                                        await followController
-                                            .unFollow(club.id);
-                                        getFollowedEmails();
-                                        await getClubById.getClubById(club.id!);
-                                        Future.delayed(Duration(seconds: 5),
-                                            () {
-                                          print(getFollowedEmails());
-                                        });
-                                      } else {
-                                        await followController.follow(club.id);
-                                        getFollowedEmails();
-                                        await getClubById.getClubById(club.id!);
-                                        Future.delayed(Duration(seconds: 5),
-                                            () {
-                                          print(getFollowedEmails());
-                                        });
-                                      }
-                                    } else {
+                                    if (token == null) {
                                       // ignore: use_build_context_synchronously
                                       _showAlertDialog(context, club.name);
+                                    } else {
+                                      if (getFollowedEmails().contains(
+                                          authController.mail.toString())) {
+                                        await followController
+                                            .unFollow(club.id);
+                                        await clubController.getclubs();
+                                        getFollowedEmails();
+                                        print(getFollowedEmails());
+                                      } else {
+                                        await followController.follow(club.id);
+                                        await clubController.getclubs();
+                                        getFollowedEmails();
+                                        print(getFollowedEmails());
+                                      }
                                     }
-                                    // print(getClubs());
                                   },
                                   icon: getFollowedEmails().contains(
-                                                  authController.mail.value) &&
-                                              authController.mail.value != '' ||
-                                          getClubs().contains(
-                                              authController.mail.value)
+                                              authController.mail.toString()) ||
+                                          authController.mail.value != 'null'
                                       ? const Icon(
-                                          Icons.notifications_active_outlined,
-                                        )
+                                          Icons.notifications_active_outlined)
                                       : const Icon(
-                                          Icons.notification_add_rounded,
-                                        ),
+                                          Icons.notification_add_rounded),
                                 ),
                               ),
                             ),
@@ -323,22 +271,13 @@ class HomeScreen extends StatelessWidget {
                         ),
                       );
                     },
-                  ),
-                ],
-              ),
+                  );
+                }
+              }),
             ),
-          );
-        }
-      }),
+          ],
+        ),
+      ),
     );
   }
-
-  RxBool following = false.obs;
 }
-// Rx<Availability> getOneDate() {
-//     return stads.availability!
-//         .firstWhere((element) =>
-//             element.date!.substring(0, 10) ==
-//             selectedDate.value.toString().substring(0, 10))
-//         .obs;
-//   }

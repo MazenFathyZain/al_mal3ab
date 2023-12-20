@@ -1,4 +1,4 @@
-package com.example.kora
+package com.mazen.kora
 
 import io.flutter.embedding.android.FlutterActivity
 

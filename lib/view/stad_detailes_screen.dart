@@ -3,6 +3,8 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kora/constants.dart';
+import 'package:kora/controller/location_controller.dart';
 import 'package:kora/model/club.dart';
 import 'package:intl/intl.dart';
 
@@ -15,7 +17,7 @@ class StadDetailes extends StatelessWidget {
     this.phone,
   });
 
-  final Rx<DateTime> selectedDate = DateTime.now().obs;
+  Rx<DateTime> selectedDate = DateTime.now().obs;
 
   void _showDatePicker(BuildContext context) async {
     final DateTime currentDate = DateTime.now();
@@ -30,46 +32,44 @@ class StadDetailes extends StatelessWidget {
     if (pickedDate != null) {
       selectedDate.value = pickedDate;
       print('Selected date: $pickedDate');
-      getOneDate();
-      // print(getOneDate().value);
+      reservatedTimes();
+      print(reservatedTimes());
     }
   }
 
-  Rx<Availability> getOneDate() {
-    return stads.availability!
-        .firstWhere((element) =>
-            element.date!.substring(0, 10) ==
-            selectedDate.value.toString().substring(0, 10))
-        .obs;
+  RxList<String?> reservatedTimes() {
+    List<String?> reservationTimes = stads.reservations!
+        .where(
+          (reservation) =>
+              reservation.reservationTime!.substring(0, 10) ==
+                      selectedDate.value.toString().substring(0, 10) &&
+                  reservation.status == 'RESERVED' ||
+              reservation.reservationTime!.substring(0, 10) ==
+                      selectedDate.value.toString().substring(0, 10) &&
+                  reservation.status == 'PINNED',
+        )
+        .map((reservation) => reservation.reservationTime!.substring(11, 16))
+        .toList();
+    return reservationTimes.obs;
+  }
+
+  nextDate() {
+    selectedDate.value = selectedDate.value.add(const Duration(days: 1));
+  }
+
+  lasttDate() {
+    selectedDate.value = selectedDate.value.subtract(const Duration(days: 1));
   }
 
   @override
   Widget build(BuildContext context) {
-    final DateFormat formatter = DateFormat('EEEE, MMMM d', 'ar_SA');
-    Uint8List bytes = base64Decode(stads.photos![0]);
+    final DateFormat formatter = DateFormat('EEEE  d', 'ar_SA');
+    var image = stads.images![0];
+
+    Uint8List bytes =
+        base64Decode(image != '' ? stads.images![0].substring(23) : '');
+
     return Scaffold(
-      floatingActionButton: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          FloatingActionButton(
-            backgroundColor: Colors.grey[50],
-            onPressed: () {},
-            child: const Icon(
-              Icons.phone,
-              color: Colors.green,
-            ),
-          ),
-          const SizedBox(width: 10),
-          FloatingActionButton(
-            backgroundColor: Colors.grey[50],
-            onPressed: () {},
-            child: const Icon(
-              Icons.location_on,
-              color: Colors.green,
-            ),
-          ),
-        ],
-      ),
       appBar: AppBar(
         title: Text(stads.name!),
       ),
@@ -79,65 +79,83 @@ class StadDetailes extends StatelessWidget {
             SizedBox(
               height: MediaQuery.of(context).size.height * 27 / 100,
               width: double.infinity,
-              child: Image.memory(
-                bytes,
-                fit: BoxFit.fill,
+              child: ClipRRect(
+                child: image != ''
+                    ? Image.memory(
+                        bytes,
+                        fit: BoxFit.fill,
+                      )
+                    : Image.asset(
+                        'assets/image.jpg',
+                        fit: BoxFit.fill,
+                      ),
               ),
             ),
             const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () {
-                _showDatePicker(context);
-              },
-              style: ButtonStyle(
-                // backgroundColor:
-                //     MaterialStateProperty.all<Color>(Colors.orange.shade600),
-                fixedSize: MaterialStateProperty.all<Size>(
-                  const Size(double.infinity,
-                      48.0), // Set the desired width and height
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.arrow_back_ios),
+                  onPressed: () {
+                    lasttDate();
+                  },
                 ),
-              ),
-              child: Obx(
-                () => Text(
-                  formatter.format(selectedDate.value),
-                  style: const TextStyle(fontSize: 20, color: Colors.black),
+                TextButton(
+                  onPressed: () {
+                    _showDatePicker(context);
+                  },
+                  child: Obx(
+                    () => Text(
+                      formatter.format(selectedDate.value),
+                      style: const TextStyle(fontSize: 20, color: Colors.black),
+                    ),
+                  ),
                 ),
-              ),
+                IconButton(
+                  icon: const Icon(Icons.arrow_forward_ios),
+                  onPressed: () {
+                    nextDate();
+                  },
+                ),
+              ],
             ),
-            const SizedBox(height: 5),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SizedBox(
-                height: MediaQuery.of(context).size.height * 45 / 100,
-                child: Expanded(
-                  child: GridView.count(
-                    crossAxisCount: 4,
-                    children: List.generate(24, (index) {
-                      return Obx(
-                        () => Container(
-                          margin: const EdgeInsets.all(3),
-                          padding: const EdgeInsets.all(2),
-                          decoration: BoxDecoration(
-                            color: getOneDate().value.slots![index].status ==
-                                    'free'
-                                ? Colors.green[200]
-                                : Colors.red[200],
-                            border: getOneDate().value.slots![index].status ==
-                                    'free'
-                                ? Border.all(color: Colors.green)
-                                : Border.all(color: Colors.red),
-                            borderRadius: BorderRadius.circular(5),
-                          ),
+            const SizedBox(height: 15),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 45 / 100,
+              child: Expanded(
+                child: GridView.builder(
+                  itemCount: 24,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    childAspectRatio: 0.7,
+                    crossAxisCount: 6,
+                  ),
+                  itemBuilder: (BuildContext context, int index) {
+                    String hour = '${index.toString().padLeft(2, '0')}:00';
+                    return Obx(
+                      () => Container(
+                        // margin: const EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          color: reservatedTimes().contains(hour)
+                              ? const Color.fromARGB(255, 255, 72, 72)
+                              : const Color.fromARGB(255, 110, 206, 113),
+                          border: reservatedTimes().contains(hour)
+                              ? Border.all(color: Colors.red.shade100)
+                              : Border.all(color: Colors.white),
+                          // Color(0xffF2F4F7)
+                          // borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: SizedBox(
                           child: Center(
                               child: Text(
-                            "${getOneDate().value.slots![index].hour}:00",
+                            hour,
                             style: const TextStyle(
                                 fontSize: 16, color: Colors.black),
                           )),
                         ),
-                      );
-                    }),
-                  ),
+                      ),
+                    );
+                  },
                 ),
               ),
             ),
@@ -147,3 +165,8 @@ class StadDetailes extends StatelessWidget {
     );
   }
 }
+ // style: ButtonStyle(
+                  //   fixedSize: MaterialStateProperty.all<Size>(
+                  //     const Size(double.infinity, 40), // width and height
+                  //   ),
+                  // ),

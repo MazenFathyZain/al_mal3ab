@@ -4,33 +4,38 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kora/model/club.dart';
-import 'package:kora/view/stad_detailes_screen.dart';
+import 'package:kora/view/admin_screens/admin_stad_detailes_screen.dart';
 
-class StadsScreen extends StatelessWidget {
+class AdminStadsScreen extends StatelessWidget {
   final List<Stadiums> stads;
+  final int stadIndex;
+  final int clubId;
 
-  const StadsScreen({super.key, required this.stads});
+  const AdminStadsScreen({
+    super.key,
+    required this.stads,
+    required this.clubId,
+    required this.stadIndex,
+  });
 
   @override
   Widget build(BuildContext context) {
-    double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         title: const Text("الملاعب"),
-        centerTitle: true,
       ),
       body: ListView.builder(
           itemCount: stads.length,
           itemBuilder: (context, index) {
-            var image = stads[index].images![0];
-            Uint8List bytes = base64Decode(
-                image != '' ? stads[index].images![0].substring(23) : '');
-
+            // Uint8List bytes =
+            //     base64Decode(stads[index].images![0].substring(23));
             return GestureDetector(
               onTap: () {
                 Get.to(
-                  StadDetailes(
+                  () => AdminStadDetailes(
+                    stadIndex: index,
+                    clubId: clubId,
                     stads: stads[index],
                   ),
                 );
@@ -44,15 +49,14 @@ class StadsScreen extends StatelessWidget {
                       child: SizedBox(
                         height: 250,
                         width: width,
-                        child: image != ''
-                            ? Image.memory(
-                                bytes,
-                                fit: BoxFit.fill,
-                              )
-                            : Image.asset(
-                                'assets/image.jpg',
-                                fit: BoxFit.fill,
-                              ),
+                        child: Image.asset(
+                          'assets/image.jpg',
+                          fit: BoxFit.fill,
+                        ),
+                        // child: Image.memory(
+                        //   bytes,
+                        //   fit: BoxFit.fill,
+                        // ),
                       ),
                     ),
                     Positioned(

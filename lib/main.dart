@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:get/get.dart';
 import 'package:kora/constants.dart';
+import 'package:kora/controller/admin_clubs.dart';
+import 'package:kora/view/admin_screens/admin_screen.dart';
 import 'package:kora/view/home_screen.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final colorScheme = ColorScheme.fromSeed(
   brightness: Brightness.light,
@@ -11,7 +14,6 @@ final colorScheme = ColorScheme.fromSeed(
 );
 
 final theme = ThemeData().copyWith(
-    useMaterial3: true,
     scaffoldBackgroundColor: colorScheme.background,
     colorScheme: colorScheme,
     appBarTheme: const AppBarTheme(
@@ -20,22 +22,27 @@ final theme = ThemeData().copyWith(
     iconTheme: const IconThemeData(
       color: primaryColor,
     ));
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
-void main() {
-  runApp(
-    const MyApp(),
-  );
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String? token = prefs.getString('token');
+  String? role = prefs.getString('role');
+  runApp(MyApp(token, role));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  final String? token;
+  final String? role;
+  const MyApp(this.token, this.role, {super.key});
 
- @override
+  @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-       localizationsDelegates: const [
+      localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: const [
         Locale('ar'), // Arabic
@@ -43,10 +50,15 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Great Places',
       theme: theme,
-      initialRoute: '/',
+      navigatorKey: Get.key,
+      initialBinding: BindingsBuilder(() {
+        // Get.put(DataController());
+      }),
+      initialRoute:
+          token == null || token!.isEmpty || role == 'USER' ? '/' : 'admin',
       routes: {
-        '/': (context) =>  HomeScreen(),
-
+        '/': (context) => HomeScreen(),
+        'admin': (context) => AdminScreen(),
       },
     );
   }

@@ -5,7 +5,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:kora/model/user.dart';
+import 'package:kora/model/club.dart';
+
 
 class Detailes extends StatelessWidget {
   final Stadiums stads;
@@ -32,22 +33,22 @@ class Detailes extends StatelessWidget {
     if (pickedDate != null) {
       selectedDate.value = pickedDate;
       print('Selected date: $pickedDate');
-      getOneDate();
+      // getOneDate();
     }
   }
 
-  Rx<Availability> getOneDate() {
-    return stads.availability!
-        .firstWhere((element) =>
-            element.date!.substring(0, 10) ==
-            selectedDate.value.toString().substring(0, 10))
-        .obs;
-  }
+  // Rx<Availability> getOneDate() {
+  //   return stads.availability!
+  //       .firstWhere((element) =>
+  //           element.date!.substring(0, 10) ==
+  //           selectedDate.value.toString().substring(0, 10))
+  //       .obs;
+  // }
 
   @override
   Widget build(BuildContext context) {
     final DateFormat formatter = DateFormat('EEEE, MMMM d', 'ar_SA');
-    Uint8List bytes = base64Decode(stads.photos![0]);
+    // Uint8List bytes = base64Decode(stads.photos![0]);
     return Scaffold(
       appBar: AppBar(
         title: Text(stads.name!),
@@ -58,10 +59,10 @@ class Detailes extends StatelessWidget {
             SizedBox(
               height: MediaQuery.of(context).size.height * 27 / 100,
               width: double.infinity,
-              child: Image.memory(
-                bytes,
-                fit: BoxFit.fill,
-              ),
+              // child: Image.memory(
+              //   bytes,
+              //   fit: BoxFit.fill,
+              // ),
             ),
             const SizedBox(height: 10),
             ElevatedButton(
@@ -98,23 +99,24 @@ class Detailes extends StatelessWidget {
                           child: Container(
                             margin: const EdgeInsets.all(3),
                             padding: const EdgeInsets.all(2),
-                            decoration: BoxDecoration(
-                              color: getOneDate().value.slots![index].status ==
-                                      'free'
-                                  ? Colors.green[200]
-                                  : Colors.red[200],
-                              border: getOneDate().value.slots![index].status ==
-                                      'free'
-                                  ? Border.all(color: Colors.green)
-                                  : Border.all(color: Colors.red),
-                              borderRadius: BorderRadius.circular(5),
-                            ),
+                            // decoration: BoxDecoration(
+                            //   color: getOneDate().value.slots![index].status ==
+                            //           'free'
+                            //       ? Colors.green[200]
+                            //       : Colors.red[200],
+                            //   border: getOneDate().value.slots![index].status ==
+                            //           'free'
+                            //       ? Border.all(color: Colors.green)
+                            //       : Border.all(color: Colors.red),
+                            //   borderRadius: BorderRadius.circular(5),
+                            // ),
                             child: Center(
-                                child: Text(
-                              "${getOneDate().value.slots![index].hour}:00",
-                              style: const TextStyle(
-                                  fontSize: 16, color: Colors.black),
-                            )),
+                              //   child: Text(
+                              // "${getOneDate().value.slots![index].hour}:00",
+                              // style: const TextStyle(
+                              //     fontSize: 16, color: Colors.black),
+                            // )
+                            ),
                           ),
                         ),
                       );
@@ -158,15 +160,15 @@ class Detailes extends StatelessWidget {
   void saveChanges(index) {
     String newTitle = 'booked';
     // Update the local data
-    getOneDate().value.slots![index].status = newTitle;
+    // getOneDate().value.slots![index].status = newTitle;
 
     // Update the API data by sending a PUT request
     final dio = Dio();
-    dio.patch(
-        'http://localhost:8000/api/user${getOneDate().value.slots![index].status = newTitle}',
-        data: {
-          'status': newTitle,
-        });
+    // dio.patch(
+    //     // 'http://localhost:8000/api/user${getOneDate().value.slots![index].status = newTitle}',
+    //     data: {
+    //       'status': newTitle,
+    //     });
 
     Get.back(); // Return to the previous screen
   }

@@ -1,192 +1,256 @@
 class Club {
-  String? sId;
+  int? id;
   String? name;
-  List<Stadiums>? stadiums;
-  List<Null>? followers;
+  User? user;
   String? address;
-  String? cost;
-  List<String>? photos;
-  Location? location;
-  int? iV;
-  int? distance;
+  List<Followers>? followers;
+  List<Stadiums>? stadiums;
 
   Club(
-      {this.sId,
+      {this.id,
       this.name,
-      this.stadiums,
-      this.followers,
+      this.user,
       this.address,
-      this.cost,
-      this.photos,
-      this.location,
-      this.iV,
-      this.distance});
+      this.followers,
+      this.stadiums});
 
   Club.fromJson(Map<String, dynamic> json) {
-    sId = json['_id'];
+    id = json['id'];
     name = json['name'];
+    user = json['user'] != null ? new User.fromJson(json['user']) : null;
+    address = json['address'];
+   if (json['followers'] != null) {
+      followers = <Followers>[];
+      json['followers'].forEach((v) {
+        followers!.add(new Followers.fromJson(v));
+      });
+    }
     if (json['stadiums'] != null) {
       stadiums = <Stadiums>[];
       json['stadiums'].forEach((v) {
         stadiums!.add(new Stadiums.fromJson(v));
       });
     }
-    if (json['followers'] != null) {
-      followers = <Null>[];
-      json['followers'].forEach((v) {
-        // followers!.add(new Null.fromJson(v));
-      });
-    }
-    address = json['address'];
-    cost = json['cost'];
-    photos = json['photos'].cast<String>();
-    location = json['location'] != null
-        ? new Location.fromJson(json['location'])
-        : null;
-    iV = json['__v'];
-    distance = json['distance'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['_id'] = this.sId;
+    data['id'] = this.id;
     data['name'] = this.name;
+    if (this.user != null) {
+      data['user'] = this.user!.toJson();
+    }
+    data['address'] = this.address;
+     if (this.followers != null) {
+      data['followers'] = this.followers!.map((v) => v.toJson()).toList();
+    }
     if (this.stadiums != null) {
       data['stadiums'] = this.stadiums!.map((v) => v.toJson()).toList();
     }
-    if (this.followers != null) {
-      // data['followers'] = this.followers!.map((v) => v.toJson()).toList();
+    return data;
+  }
+}
+
+class User {
+  int? id;
+  String? firstName;
+  String? lastName;
+  String? email;
+  String? password;
+  String? role;
+  List<Null>? followedClubs;
+  bool? accountNonExpired;
+  bool? credentialsNonExpired;
+  bool? accountNonLocked;
+  List<Authorities>? authorities;
+  String? username;
+  bool? enabled;
+
+  User(
+      {this.id,
+      this.firstName,
+      this.lastName,
+      this.email,
+      this.password,
+      this.role,
+      this.followedClubs,
+      this.accountNonExpired,
+      this.credentialsNonExpired,
+      this.accountNonLocked,
+      this.authorities,
+      this.username,
+      this.enabled});
+
+  User.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    firstName = json['firstName'];
+    lastName = json['lastName'];
+    email = json['email'];
+    password = json['password'];
+    role = json['role'];
+    if (json['followedClubs'] != null) {
+      followedClubs = <Null>[];
+      json['followedClubs'].forEach((v) {
+        // followedClubs!.add(new Null.fromJson(v));
+      });
     }
-    data['address'] = this.address;
-    data['cost'] = this.cost;
-    data['photos'] = this.photos;
-    if (this.location != null) {
-      data['location'] = this.location!.toJson();
+    accountNonExpired = json['accountNonExpired'];
+    credentialsNonExpired = json['credentialsNonExpired'];
+    accountNonLocked = json['accountNonLocked'];
+    if (json['authorities'] != null) {
+      authorities = <Authorities>[];
+      json['authorities'].forEach((v) {
+        authorities!.add(new Authorities.fromJson(v));
+      });
     }
-    data['__v'] = this.iV;
-    data['distance'] = this.distance;
+    username = json['username'];
+    enabled = json['enabled'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['firstName'] = this.firstName;
+    data['lastName'] = this.lastName;
+    data['email'] = this.email;
+    data['password'] = this.password;
+    data['role'] = this.role;
+    if (this.followedClubs != null) {
+      // data['followedClubs'] =
+          // this.followedClubs!.map((v) => v.toJson()).toList();
+    }
+    data['accountNonExpired'] = this.accountNonExpired;
+    data['credentialsNonExpired'] = this.credentialsNonExpired;
+    data['accountNonLocked'] = this.accountNonLocked;
+    if (this.authorities != null) {
+      data['authorities'] = this.authorities!.map((v) => v.toJson()).toList();
+    }
+    data['username'] = this.username;
+    data['enabled'] = this.enabled;
+    return data;
+  }
+}
+
+class Authorities {
+  String? authority;
+
+  Authorities({this.authority});
+
+  Authorities.fromJson(Map<String, dynamic> json) {
+    authority = json['authority'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['authority'] = this.authority;
     return data;
   }
 }
 
 class Stadiums {
-  String? sId;
+  int? id;
   String? name;
-  List<String>? photos;
-  int? size;
-  List<Availability>? availability;
-  String? createdAt;
-  String? updatedAt;
-  int? iV;
+  String? size;
+  String? features;
+  String? cost;
+  String? description;
+  List<String>? images;
+  List<Reservations>? reservations;
 
   Stadiums(
-      {this.sId,
+      {this.id,
       this.name,
-      this.photos,
       this.size,
-      this.availability,
-      this.createdAt,
-      this.updatedAt,
-      this.iV});
+      this.features,
+      this.cost,
+      this.description,
+      this.images,
+      this.reservations});
 
   Stadiums.fromJson(Map<String, dynamic> json) {
-    sId = json['_id'];
+    id = json['id'];
     name = json['name'];
-    photos = json['photos'].cast<String>();
     size = json['size'];
-    if (json['availability'] != null) {
-      availability = [];
-      json['availability'].forEach((v) {
-        availability!.add(new Availability.fromJson(v));
+    features = json['features'];
+    cost = json['cost'];
+    description = json['description'];
+    images = json['images'].cast<String>();
+    if (json['reservations'] != null) {
+      reservations = <Reservations>[];
+      json['reservations'].forEach((v) {
+        reservations!.add(new Reservations.fromJson(v));
       });
     }
-    createdAt = json['createdAt'];
-    updatedAt = json['updatedAt'];
-    iV = json['__v'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['_id'] = this.sId;
+    data['id'] = this.id;
     data['name'] = this.name;
-    data['photos'] = this.photos;
     data['size'] = this.size;
-    if (this.availability != null) {
-      data['availability'] = this.availability!.map((v) => v.toJson()).toList();
+    data['features'] = this.features;
+    data['cost'] = this.cost;
+    data['description'] = this.description;
+    data['images'] = this.images;
+    if (this.reservations != null) {
+      data['reservations'] = this.reservations!.map((v) => v.toJson()).toList();
     }
-    data['createdAt'] = this.createdAt;
-    data['updatedAt'] = this.updatedAt;
-    data['__v'] = this.iV;
     return data;
   }
 }
 
-class Availability {
-  String? date;
-  List<Slots>? slots;
-  String? sId;
-
-  Availability({this.date, this.slots, this.sId});
-
-  Availability.fromJson(Map<String, dynamic> json) {
-    date = json['date'];
-    if (json['slots'] != null) {
-      slots = <Slots>[];
-      json['slots'].forEach((v) {
-        slots!.add(new Slots.fromJson(v));
-      });
-    }
-    sId = json['_id'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['date'] = this.date;
-    if (this.slots != null) {
-      data['slots'] = this.slots!.map((v) => v.toJson()).toList();
-    }
-    data['_id'] = this.sId;
-    return data;
-  }
-}
-
-class Slots {
-  int? hour;
+class Reservations {
+  int? id;
+  User? user;
+  String? playerName;
+  String? reservationTime;
   String? status;
-  String? sId;
 
-  Slots({this.hour, this.status, this.sId});
+  Reservations(
+      {this.id, this.user, this.playerName, this.reservationTime, this.status});
 
-  Slots.fromJson(Map<String, dynamic> json) {
-    hour = json['hour'];
+  Reservations.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    user = json['user'] != null ? new User.fromJson(json['user']) : null;
+    playerName = json['playerName'];
+    reservationTime = json['reservationTime'];
     status = json['status'];
-    sId = json['_id'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['hour'] = this.hour;
+    data['id'] = this.id;
+    if (this.user != null) {
+      data['user'] = this.user!.toJson();
+    }
+    data['playerName'] = this.playerName;
+    data['reservationTime'] = this.reservationTime;
     data['status'] = this.status;
-    data['_id'] = this.sId;
     return data;
   }
 }
+class Followers {
+  int? id;
+  Club? club;
+  User? user;
 
-class Location {
-  String? type;
-  List<double>? coordinates;
+  Followers({this.id, this.club, this.user});
 
-  Location({this.type, this.coordinates});
-
-  Location.fromJson(Map<String, dynamic> json) {
-    type = json['type'];
-    coordinates = json['coordinates'].cast<double>();
+  Followers.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    club = json['club'] != null ? new Club.fromJson(json['club']) : null;
+    user = json['user'] != null ? new User.fromJson(json['user']) : null;
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['type'] = this.type;
-    data['coordinates'] = this.coordinates;
+    data['id'] = this.id;
+    if (this.club != null) {
+      data['club'] = this.club!.toJson();
+    }
+    if (this.user != null) {
+      data['user'] = this.user!.toJson();
+    }
     return data;
   }
 }

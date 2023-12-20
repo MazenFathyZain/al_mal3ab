@@ -28,17 +28,22 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  change_app_package_name: ^1.1.0
   cupertino_icons: ^1.0.2
   dio: ^5.3.2
   flutter:
     sdk: flutter
   flutter_localization: ^0.1.14
+  flutter_localizations:
+    sdk: flutter
   flutter_native_splash: ^2.2.16
   geolocator: ^10.0.0
   get: ^4.6.5
   google_fonts: ^5.1.0
   intl: ^0.18.1
   shared_preferences: ^2.2.2
+  url_launcher: ^6.2.2
+  url_launcher_tizen: ^2.1.2
 
 flutter_native_splash:
   color: "##FFFFFF"

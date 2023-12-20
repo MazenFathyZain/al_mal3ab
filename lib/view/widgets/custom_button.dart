@@ -5,14 +5,13 @@ import '../../../constants.dart';
 import 'custom_text.dart';
 
 class CustomButton extends StatelessWidget {
-
   final String? text;
-  final VoidCallback ? onpressed;
+  final VoidCallback? onpressed;
 
   CustomButton({this.text, this.onpressed});
   @override
   Widget build(BuildContext context) {
-    return  TextButton(
+    return TextButton(
       onPressed: onpressed,
       style: TextButton.styleFrom(
         backgroundColor: primaryColor,
@@ -23,10 +22,10 @@ class CustomButton extends StatelessWidget {
       ),
       child: CustomText(
         text: text!,
+        fontsize: 18,
         alignment: Alignment.center,
         color: Colors.white,
       ),
     );
   }
-
 }
