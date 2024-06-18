@@ -1,16 +1,5 @@
 # kora
 
-A new Flutter project.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+![684cd926-f964-486d-a86d-b916913cc91f](https://github.com/MazenFathyZain/al_mal3ab/assets/116312190/a5f72d14-fe7a-43fa-9518-dc8960bb53f0)
+![df299abf-3fc9-4ebb-9d9b-33d07195f432](https://github.com/MazenFathyZain/al_mal3ab/assets/116312190/b1a06a8b-a170-4101-b711-b359c58caed9)
+![b95395f5-36c0-461d-8668-c98e904ecc4d](https://github.com/MazenFathyZain/al_mal3ab/assets/116312190/57f95680-7131-4081-a02e-1aa5c651626c)
